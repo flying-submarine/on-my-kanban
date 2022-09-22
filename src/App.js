@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */ 
 import logo from './logo.svg';
 import './App.css';
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import { css } from '@emotion/react'
 
 
@@ -23,9 +23,14 @@ const COLUMN_BG_COlORS = {
 
 const KanbanNewCard = ({onSubmit}) => {
   const [title, setTitle] = useState('');
+  const inputElem = useRef(null)
   const handleChange = (evt)=>{
     setTitle(evt.target.value)
   }
+  useEffect(()=>{
+    inputElem.current.focus()
+    console.log(inputElem.current.value)
+  },[])
   const handleKeyDown = (evt)=>{
     if(evt.key === "Enter"){
       onSubmit(title)
@@ -45,6 +50,7 @@ const KanbanNewCard = ({onSubmit}) => {
         <input 
           type="text" 
           value={title}
+          ref={inputElem}
           onChange={handleChange} 
           onKeyDown={handleKeyDown}
         />
@@ -121,6 +127,7 @@ function App() {
   const handleAdd = () => {  
     setShowAdd(true) 
   };
+
 
   const KanBanBoard = ({ children })=>
     <main
