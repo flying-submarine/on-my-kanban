@@ -23,7 +23,6 @@
     margin: 1rem 1rem 0;
     border-radius: 1rem;
     background-color: #282c34;
-    min-height: 100vh;
     min-height: 5rem;
     display: flex;
     flex-direction: row-reverse;

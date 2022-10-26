@@ -172,11 +172,13 @@ function App() {
           }
         `}
       >
-         <h2>{title}</h2>
+        <h2>{title}</h2>
         <ul>{children}</ul>
       </section>
     )
   }
+
+  
   
   const handleSubmit = (title)=>{
     setTodoList( currentTodoList => [
