@@ -5,11 +5,12 @@ import { useState,useEffect,useRef } from 'react';
 import { css } from '@emotion/react'
 
 const COLUMN_BG_COlORS = {
+  loading:"#E3E3E3",
   todo:"#C9AF97",
   ongoing:"#FFE799",
   done:"#C0E8BA"
 }
-
+const DATA_STORE_KEY = "kanban-data-store"
 
 const KanbanNewCard = ({onSubmit}) => {
   const [title, setTitle] = useState('');
@@ -119,15 +120,29 @@ function App() {
     { title: '测试任务-2', status: '2022-05-12 18:15' }
   ])
   const [doneList,setDoneList] = useState([
-    { title: '开发任务-1', status: '2022-09-15 21:10' },
-    { title: '开发任务-3', status: '2022-05-22 18:15' },
-    { title: '开发任务-5', status: '2022-05-22 21:05' },
+    { title: '开发任务-9', status: '2022-11-02 21:10' },
+    { title: '开发任务-7', status: '2022-11-22 18:15' },
+    { title: '开发任务-5', status: '2022-11-22 21:05' },
   ])
+  const [isLoading,setIsLoading] = useState(true)
  
-  const handleAdd = () => {  
+  const handleAdd = (evt) => {  
+    console.log(evt)
     setShowAdd(true) 
   };
 
+  useEffect(()=>{
+    const data = window.localStorage.getItem(DATA_STORE_KEY);
+    setTimeout(()=>{
+      if(data){
+        const kanbanColumnData = JSON.parse(data); 
+        setTodoList(kanbanColumnData.todoList);
+        setOngoingList(kanbanColumnData.ongoingList);
+        setDoneList(kanbanColumnData.doneList);
+      }
+      setIsLoading(false)
+    },1000)
+  },[])
 
   const KanBanBoard = ({ children })=>
     <main
@@ -178,8 +193,6 @@ function App() {
     )
   }
 
-  
-  
   const handleSubmit = (title)=>{
     setTodoList( currentTodoList => [
       { title, status: new Date().toDateString()},
@@ -188,33 +201,45 @@ function App() {
     todoList.unshift({ title, status: new Date().toDateString() });
   }
 
+  const handleSaveAll = ()=>{
+    const data = JSON.stringify({
+      todoList,
+      ongoingList,
+      doneList
+    })
+    window.localStorage.setItem(DATA_STORE_KEY,data)
+  }
+
   return (
-        <div className="App">
-          <header className="App-header">
-            <h1>我的看板</h1>
-            <img src={logo} className="App-logo" alt="logo" />
-          </header>
-          <KanBanBoard>
-              <KanBanColumn bgColor = {COLUMN_BG_COlORS["todo"]} title={
-                <>
-                  待处理
-                  <button onClick={handleAdd} disabled={showAdd}>
-                  ⊕ 添加新卡片
-                  </button>
-                </>
-              }>
-                {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
-                { todoList.map(props => <KanbanCard {...props}  key={props.title}/>) }
-              </KanBanColumn>
-              <KanBanColumn bgColor = {COLUMN_BG_COlORS["ongoing"]}  title="进行中">
-                  { ongoingList.map(props => <KanbanCard {...props} key={props.title}/>) }
-              </KanBanColumn>
-              <KanBanColumn  bgColor = {COLUMN_BG_COlORS["done"]} title="已完成">
-                  { doneList.map(props => <KanbanCard {...props} key={props.title} />) }
-              </KanBanColumn>
-          </KanBanBoard>
-        </div>
-      );
-    }
+    <div className="App">
+      <header className="App-header">
+        <h1>我的看板<button onClick={handleSaveAll}>保存所有卡片</button></h1>
+        <img src={logo} className="App-logo" alt="logo" />
+      </header>
+      <KanBanBoard>
+        {isLoading?
+          (<KanBanColumn bgColor={COLUMN_BG_COlORS["loading"]} title={"处理中"}/>)
+          :(<KanBanColumn bgColor = {COLUMN_BG_COlORS["todo"]} title={
+            <>
+              待处理
+              <button onClick={handleAdd} disabled={showAdd}>
+              ⊕ 添加新卡片
+              </button>
+            </>
+          }>
+            {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
+            {todoList.map(props => <KanbanCard {...props}  key={props.title}/>) }
+            </KanBanColumn>
+        )}
+        <KanBanColumn bgColor = {COLUMN_BG_COlORS["ongoing"]}  title="进行中">
+            { ongoingList.map(props => <KanbanCard {...props} key={props.title}/>) }
+        </KanBanColumn>
+        <KanBanColumn  bgColor = {COLUMN_BG_COlORS["done"]} title="已完成">
+            { doneList.map(props => <KanbanCard {...props} key={props.title} />) }
+        </KanBanColumn>
+      </KanBanBoard>
+    </div>
+  );
+}
 
 export default App;
