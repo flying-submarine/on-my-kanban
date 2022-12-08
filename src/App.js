@@ -11,6 +11,10 @@ const COLUMN_BG_COlORS = {
   done:"#C0E8BA"
 }
 const DATA_STORE_KEY = "kanban-data-store"
+const COLUMN_KEY_TODO = "todo"
+const COLUMN_KEY_ONGOING = "ongoing"
+const COLUMN_KEY_DONE = "done"
+
 
 const KanbanNewCard = ({onSubmit}) => {
   const [title, setTitle] = useState('');
@@ -92,13 +96,18 @@ const KanbanCard = ({ title, status }) => {
     };
   }, [status]);
 
+  const handleDragStart = (evt)=>{
+    console.log(evt,'evt');
+    evt.dataTransfer.effectAllowed = "move"
+    evt.dataTransfer.setData("text/plain",title);
+  }
   return (
-    <li css={kanbanCardStyles}>
+    <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
       <div css={kanbanCardStylesTitle}>{title}</div>
       <div css={
         css`text-align: right;
         font-size: 0.8rem;
-        color: #333;`}
+        color: #333;`} 
         title={status}
       >
         {displayTime}
@@ -158,6 +167,20 @@ function App() {
   const KanBanColumn = ({ children,bgColor,title })=>{
     return (
       <section 
+        onDragOver={(evt) => { 
+          evt.preventDefault();
+          evt.dataTransfer.dropEffect = 'move'; 
+        }} 
+        onDragLeave={(evt) => { 
+          evt.preventDefault(); 
+          evt.dataTransfer.dropEffect = 'none'; 
+        }} 
+        onDrop={(evt) => { 
+          evt.preventDefault();
+        }} 
+        onDragEnd={(evt) => { 
+          evt.preventDefault(); 
+        }}
         css={css`
           flex: 1 1;
           display: flex;
