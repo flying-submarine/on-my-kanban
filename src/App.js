@@ -24,7 +24,6 @@ const KanbanNewCard = ({onSubmit}) => {
   }
   useEffect(()=>{
     inputElem.current.focus()
-    console.log(inputElem.current.value)
   },[])
   const handleKeyDown = (evt)=>{
     if(evt.key === "Enter"){
@@ -72,6 +71,7 @@ const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const UPDATE_INTERVAL = MINUTE;
+
 const KanbanCard = ({ title, status, onDragStart}) => {
   const [displayTime, setDisplayTime] = useState(status);
   useEffect(() => {
@@ -115,6 +115,85 @@ const KanbanCard = ({ title, status, onDragStart}) => {
   );
 };
 
+const KanBanBoard = ({ children })=>
+  <main
+    css={css`
+      flex: 10;
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      margin: 0 1rem 1rem;
+    `}
+  >
+    {children}
+  </main>
+
+const KanBanColumn = ({ 
+  children,
+  bgColor,
+  title,
+  setIsDragSource=()=>{},
+  setIsDragTarget=()=>{},
+  handleDrop
+})=>{
+  return (
+    <section 
+      onDragStart={()=>setIsDragSource(true)}
+      onDragOver={(evt) => { 
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'move';
+        setIsDragTarget(true) 
+      }} 
+      onDragLeave={(evt) => { 
+        evt.preventDefault(); 
+        evt.dataTransfer.dropEffect = 'none'; 
+        setIsDragTarget(false)
+      }} 
+      onDrop={(evt) => { 
+        evt.preventDefault();
+        handleDrop && handleDrop(evt)
+      }} 
+      onDragEnd={(evt) => { 
+        evt.preventDefault(); 
+        setIsDragSource(false)
+        setIsDragTarget(false) 
+      }}
+      css={css`
+        flex: 1 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid gray;
+        border-radius: 1rem;
+        background-color: ${bgColor};
+        & > ul {
+          flex: 0px;
+          margin: 1rem;
+          padding: 0;
+          overflow: auto;
+        }
+        & > h2 {
+          margin: 0.6rem 1rem;
+          padding-bottom: 0.6rem;
+          border-bottom: 1px solid gray;
+          & > button { 
+            float: right; 
+            margin-top: 0.2rem;
+            padding: 0.2rem 0.5rem; 
+            border: 0; 
+            border-radius: 1rem; 
+            height: 1.8rem; 
+            line-height: 1rem; 
+            font-size: 1rem;} 
+        }
+      `}
+    >
+      <h2>{title}</h2>
+      <ul>{children}</ul>
+    </section>
+  )
+}
+
+
 function App() {
   const [showAdd, setShowAdd] = useState(false); 
   const [todoList,setTodoList] = useState([
@@ -134,13 +213,10 @@ function App() {
   ])
   const [isLoading,setIsLoading] = useState(true)
 
-  const [draggedItem,setDraggedItem] = useState(null)
-  const [dragSource,setDragSource] = useState(null)
-  const [dragTarget,setDragTarget] = useState(null)
+ 
 
  
   const handleAdd = (evt) => {  
-    console.log(evt)
     setShowAdd(true) 
   };
 
@@ -157,82 +233,7 @@ function App() {
     },1000)
   },[])
 
-  const KanBanBoard = ({ children })=>
-    <main
-      css={css`
-        flex: 10;
-        display: flex;
-        flex-direction: row;
-        gap: 1rem;
-        margin: 0 1rem 1rem;
-      `}
-    >{children}</main>
-
-  const KanBanColumn = ({ 
-    children,
-    bgColor,
-    title,
-    setIsDragSource=()=>{},
-    setIsDragTarget=()=>{},
-    handleDrop
-  })=>{
-    return (
-      <section 
-        onDragStart={()=>setIsDragSource(true)}
-        onDragOver={(evt) => { 
-          evt.preventDefault();
-          evt.dataTransfer.dropEffect = 'move';
-          setIsDragTarget(true) 
-        }} 
-        onDragLeave={(evt) => { 
-          evt.preventDefault(); 
-          evt.dataTransfer.dropEffect = 'none'; 
-          setIsDragSource(false)
-        }} 
-        onDrop={(evt) => { 
-          evt.preventDefault();
-          handleDrop && handleDrop(evt)
-        }} 
-        onDragEnd={(evt) => { 
-          evt.preventDefault(); 
-          setIsDragSource(false)
-          setIsDragTarget(false) 
-        }}
-        css={css`
-          flex: 1 1;
-          display: flex;
-          flex-direction: column;
-          border: 1px solid gray;
-          border-radius: 1rem;
-          background-color: ${bgColor};
-          & > ul {
-            flex: 0px;
-            margin: 1rem;
-            padding: 0;
-            overflow: auto;
-          }
-          & > h2 {
-            margin: 0.6rem 1rem;
-            padding-bottom: 0.6rem;
-            border-bottom: 1px solid gray;
-            & > button { 
-              float: right; 
-              margin-top: 0.2rem;
-              padding: 0.2rem 0.5rem; 
-              border: 0; 
-              border-radius: 1rem; 
-              height: 1.8rem; 
-              line-height: 1rem; 
-              font-size: 1rem;} 
-          }
-        `}
-      >
-        <h2>{title}</h2>
-        <ul>{children}</ul>
-      </section>
-    )
-  }
-
+  
   const handleSubmit = (title)=>{
     setTodoList( currentTodoList => [
       { title, status: new Date().toDateString()},
@@ -250,6 +251,10 @@ function App() {
     window.localStorage.setItem(DATA_STORE_KEY,data)
   }
 
+  const [draggedItem,setDraggedItem] = useState(null)
+  const [dragSource,setDragSource] = useState(null)
+  const [dragTarget,setDragTarget] = useState(null)
+
   const handleDrop = (evt)=>{
     if(!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget){
       return 
@@ -260,12 +265,14 @@ function App() {
       [COLUMN_KEY_DONE]:setDoneList,
     }
     if(dragSource){
-      updateMethodObj[dragSource](pre=>pre.filiter(v=>!Object.is(v,draggedItem)))
+      updateMethodObj[dragSource](pre=>pre.filter(v=>!Object.is(v,draggedItem)))
     }
     if(dragTarget){
-      updateMethodObj[dragTarget](pre=>([...pre,draggedItem]))
+      updateMethodObj[dragTarget](pre=>([draggedItem,...pre]))
     }
   }
+  
+  console.log(dragSource,dragTarget,'xxx')
   return (
     <div className="App">
       <header className="App-header">
@@ -276,19 +283,19 @@ function App() {
         { isLoading ?
           (<KanBanColumn bgColor={COLUMN_BG_COlORS["loading"]} title={"处理中"}/>)
           :(<KanBanColumn 
-            bgColor = {COLUMN_BG_COlORS["todo"]}
-            title={
-              <>
-                待处理
-                <button onClick={handleAdd} disabled={showAdd}>
-                ⊕ 添加新卡片
-                </button>
-              </>
-            }
-            setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
-            setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
-            handleDrop={handleDrop}
-          >
+              bgColor = {COLUMN_BG_COlORS["todo"]}
+              title={
+                <>
+                  待处理
+                  <button onClick={handleAdd} disabled={showAdd}>
+                  ⊕ 添加新卡片
+                  </button>
+                </>
+              }
+              setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
+              setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
+              handleDrop={handleDrop}
+            >
               {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
               {todoList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props}  key={props.title}/>) }
             </KanBanColumn>
