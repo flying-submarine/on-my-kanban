@@ -272,7 +272,6 @@ function App() {
     }
   }
   
-  console.log(dragSource,dragTarget,'xxx')
   return (
     <div className="App">
       <header className="App-header">
