@@ -73,7 +73,6 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const UPDATE_INTERVAL = MINUTE;
 const KanbanCard = ({ title, status, onDragStart}) => {
-  console.log(111)
   const [displayTime, setDisplayTime] = useState(status);
   useEffect(() => {
     const updateDisplayTime = () => {
@@ -97,7 +96,6 @@ const KanbanCard = ({ title, status, onDragStart}) => {
   }, [status]);
 
   const handleDragStart = (evt)=>{
-    console.log(evt,'evt');
     evt.dataTransfer.effectAllowed = "move"
     evt.dataTransfer.setData("text/plain",title);
     onDragStart && onDragStart(evt)
@@ -176,6 +174,7 @@ function App() {
     title,
     setIsDragSource=()=>{},
     setIsDragTarget=()=>{},
+    handleDrop
   })=>{
     return (
       <section 
@@ -192,6 +191,7 @@ function App() {
         }} 
         onDrop={(evt) => { 
           evt.preventDefault();
+          handleDrop && handleDrop(evt)
         }} 
         onDragEnd={(evt) => { 
           evt.preventDefault(); 
@@ -251,7 +251,7 @@ function App() {
   }
 
   const handleDrop = (evt)=>{
-    if(!draggedItem || !dragSource || !dragTarget){
+    if(!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget){
       return 
     }
     const updateMethodObj = {
@@ -259,11 +259,13 @@ function App() {
       [COLUMN_KEY_ONGOING]:setOngoingList,
       [COLUMN_KEY_DONE]:setDoneList,
     }
-    // if(){
-    //   updateMethodObj[](pre=>)
-    // }
+    if(dragSource){
+      updateMethodObj[dragSource](pre=>pre.filiter(v=>!Object.is(v,draggedItem)))
+    }
+    if(dragTarget){
+      updateMethodObj[dragTarget](pre=>([...pre,draggedItem]))
+    }
   }
-
   return (
     <div className="App">
       <header className="App-header">
@@ -276,14 +278,16 @@ function App() {
           :(<KanBanColumn 
             bgColor = {COLUMN_BG_COlORS["todo"]}
             title={
-            <>
-              待处理
-              <button onClick={handleAdd} disabled={showAdd}>
-              ⊕ 添加新卡片
-              </button>
-            </>}
+              <>
+                待处理
+                <button onClick={handleAdd} disabled={showAdd}>
+                ⊕ 添加新卡片
+                </button>
+              </>
+            }
             setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
             setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
+            handleDrop={handleDrop}
           >
               {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
               {todoList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props}  key={props.title}/>) }
@@ -294,6 +298,7 @@ function App() {
           title="进行中"
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_ONGOING : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_ONGOING : null)}
+          handleDrop={handleDrop}
         >
             { ongoingList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props} key={props.title}/>) }
         </KanBanColumn>
@@ -302,6 +307,7 @@ function App() {
           title="已完成"
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_DONE : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
+          handleDrop={handleDrop}
         >
             { doneList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props} key={props.title} />) }
         </KanBanColumn>
