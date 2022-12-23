@@ -98,7 +98,7 @@ const KanbanCard = ({ title, status, onDragStart}) => {
   const handleDragStart = (evt)=>{
     evt.dataTransfer.effectAllowed = "move"
     evt.dataTransfer.setData("text/plain",title);
-    onDragStart && onDragStart(evt)
+    onDragStart && onDragStart()
   }
   return (
     <li css={kanbanCardStyles} draggable onDragStart={handleDragStart}>
