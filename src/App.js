@@ -4,7 +4,7 @@ import KanBanBoard,{
   COLUMN_KEY_TODO,
   COLUMN_KEY_ONGOING,
   COLUMN_KEY_DONE
-}from './KanBanBoard';
+} from './KanBanBoard';
 import { useState,useEffect } from 'react';
 
 import './App.css';
