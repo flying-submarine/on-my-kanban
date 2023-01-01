@@ -1,6 +1,10 @@
 /** @jsxImportSource @emotion/react */ 
 import logo from './logo.svg';
-import KanBanBoard from './KanBanBoard';
+import KanBanBoard,{
+  COLUMN_KEY_TODO,
+  COLUMN_KEY_ONGOING,
+  COLUMN_KEY_DONE
+}from './KanBanBoard';
 import { useState,useEffect } from 'react';
 
 import './App.css';
@@ -32,6 +36,11 @@ function App() {
     { title: '开发任务-7', status: '2022-11-22 18:15' },
     { title: '开发任务-5', status: '2022-11-22 21:05' },
   ])
+  const updates= {
+    [COLUMN_KEY_TODO]:setTodoList,
+    [COLUMN_KEY_ONGOING]:setOngoingList,
+    [COLUMN_KEY_DONE]:setDoneList,
+  }
   useEffect(()=>{
     const data = window.localStorage.getItem(DATA_STORE_KEY);
     setTimeout(()=>{
@@ -54,14 +63,14 @@ function App() {
     window.localStorage.setItem(DATA_STORE_KEY,data)
   }
 
-  const handleAdd = (newCard)=>{
-    setTodoList( currentList => [
-      newCard,
-      ...currentList
-    ])
+  const handleAdd = (cloumn,draggedItem)=>{
+    updates[cloumn](pre=>([draggedItem,...pre]))
+
   }
   
-
+  const onRemove = (cloumn,draggedItem)=>{
+    updates[cloumn](pre=>pre.filter(v=>!Object.is(v,draggedItem)))
+  }
   
   return (
     <div className="App">
@@ -74,8 +83,8 @@ function App() {
         todoList={todoList}
         ongoingList={ongoingList}
         doneList={doneList}
-        onDrop={()=>{}}
         onAdd={handleAdd}
+        onRemove={onRemove}
       />
     </div>
   );

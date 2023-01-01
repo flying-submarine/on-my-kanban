@@ -15,36 +15,28 @@ const COLUMN_BG_COlORS = {
   ongoing:"#FFE799",
   done:"#C0E8BA"
 }
-const COLUMN_KEY_TODO = "todo"
-const COLUMN_KEY_ONGOING = "ongoing"
-const COLUMN_KEY_DONE = "done"
+export const COLUMN_KEY_TODO = "todo"
+export const COLUMN_KEY_ONGOING = "ongoing"
+export const COLUMN_KEY_DONE = "done"
+
 export default function KanBanBoard({
   onAdd,
   isLoading,
   todoList,
   ongoingList,
   doneList,
-  onDrop
+  onRemove
 }) {
   const [draggedItem,setDraggedItem] = useState(null)
   const [dragSource,setDragSource] = useState(null)
   const [dragTarget,setDragTarget] = useState(null)
-  // const handleDrop = (evt)=>{
-  //   if(!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget){
-  //     return 
-  //   }
-  //   const updateMethodObj = {
-  //     [COLUMN_KEY_TODO]:setTodoList,
-  //     [COLUMN_KEY_ONGOING]:setOngoingList,
-  //     [COLUMN_KEY_DONE]:setDoneList,
-  //   }
-  //   if(dragSource){
-  //     updateMethodObj[dragSource](pre=>pre.filter(v=>!Object.is(v,draggedItem)))
-  //   }
-  //   if(dragTarget){
-  //     updateMethodObj[dragTarget](pre=>([draggedItem,...pre]))
-  //   }
-  // }
+  const handleDrop = (evt)=>{
+    if(!draggedItem || !dragSource || !dragTarget || dragSource === dragTarget){
+      return 
+    }
+    dragSource && onRemove(dragSource,draggedItem)
+    dragTarget && onAdd(dragTarget,draggedItem)
+  }
  
   return (
     <main css={kanbanBoardStyles}>
@@ -59,8 +51,8 @@ export default function KanBanBoard({
           cardList={todoList}
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
-          handleDrop={onDrop}
-          onAdd={onAdd}
+          handleDrop={handleDrop}
+          onAdd={onAdd.bind(null,'COLUMN_KEY_TODO')}
           canAddNew={true}
           setDraggedItem={setDraggedItem}
         />
@@ -70,7 +62,7 @@ export default function KanBanBoard({
           title="进行中"
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_ONGOING : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_ONGOING : null)}
-          handleDrop={onDrop}
+          handleDrop={handleDrop}
           cardList={ongoingList}
           setDraggedItem={setDraggedItem}
         />
@@ -79,7 +71,7 @@ export default function KanBanBoard({
           title="已完成"
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_DONE : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
-          handleDrop={onDrop}
+          handleDrop={handleDrop}
           cardList={doneList}
           setDraggedItem={setDraggedItem}
         />
