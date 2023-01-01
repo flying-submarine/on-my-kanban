@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import { useState,useEffect } from 'react';
 import KanBanBoard from './KanBanBoard';
-import KanbanNewCard from './KanbanNewCard';
 import KanBanColumn from './KanBanColumn';
 
 const COLUMN_BG_COlORS = {
@@ -23,7 +22,6 @@ export const DAY = 24 * HOUR;
 export const UPDATE_INTERVAL = MINUTE;
 
 function App() {
-  const [showAdd, setShowAdd] = useState(false); 
   const [todoList,setTodoList] = useState([
     { title: '开发任务-1', status: '2022-09-15 21:10' },
     { title: '开发任务-3', status: '2022-05-22 18:15' },
@@ -41,13 +39,6 @@ function App() {
   ])
   const [isLoading,setIsLoading] = useState(true)
 
- 
-
- 
-  const handleAdd = (evt) => {  
-    setShowAdd(true) 
-  };
-
   useEffect(()=>{
     const data = window.localStorage.getItem(DATA_STORE_KEY);
     setTimeout(()=>{
@@ -62,12 +53,11 @@ function App() {
   },[])
 
   
-  const handleSubmit = (title)=>{
-    setTodoList( currentTodoList => [
-      { title, status: new Date().toDateString()},
-      ...currentTodoList
+  const handleAdd = (newCard)=>{
+    setTodoList( currentList => [
+      newCard,
+      ...currentList
     ])
-    todoList.unshift({ title, status: new Date().toDateString() });
   }
 
   const handleSaveAll = ()=>{
@@ -109,26 +99,22 @@ function App() {
       </header>
       <KanBanBoard>
         { isLoading ?
-          (<KanBanColumn bgColor={COLUMN_BG_COlORS["loading"]} title={"处理中"}/>)
-          :(<KanBanColumn 
+          (
+            <KanBanColumn bgColor={COLUMN_BG_COlORS["loading"]} title={"处理中"}/>
+          )
+          :(
+            <KanBanColumn 
               bgColor = {COLUMN_BG_COlORS["todo"]}
-              title={
-                <>
-                  待处理
-                  <button onClick={handleAdd} disabled={showAdd}>
-                  ⊕ 添加新卡片
-                  </button>
-                </>
-              }
+              title='待处理'
               cardList={todoList}
               setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
               setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
               handleDrop={handleDrop}
-              setDraggedItem
-            >
-              {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
-            </KanBanColumn>
-        )}
+              onAdd={handleAdd}
+              canAddNew={true}
+              setDraggedItem={setDraggedItem}
+            />
+          )}
         <KanBanColumn 
           bgColor = {COLUMN_BG_COlORS["ongoing"]}  
           title="进行中"
@@ -136,10 +122,8 @@ function App() {
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_ONGOING : null)}
           handleDrop={handleDrop}
           cardList={ongoingList}
-          setDraggedItem
-
-        >
-        </KanBanColumn>
+          setDraggedItem={setDraggedItem}
+        />
         <KanBanColumn  
           bgColor = {COLUMN_BG_COlORS["done"]} 
           title="已完成"
@@ -147,9 +131,8 @@ function App() {
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
           handleDrop={handleDrop}
           cardList={doneList}
-          setDraggedItem
-        >
-        </KanBanColumn>
+          setDraggedItem={setDraggedItem}
+        />
       </KanBanBoard>
     </div>
   );

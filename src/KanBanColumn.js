@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */ 
 import { css } from '@emotion/react';
 import KanbanCard from './KanbanCard';
+import { useState } from 'react';
+import KanbanNewCard from './KanbanNewCard';
 
 export default function KanBanColumn({
   children,
@@ -10,8 +12,19 @@ export default function KanBanColumn({
   setIsDragTarget = () => { },
   handleDrop,
   cardList=[],
-  setDraggedItem
+  setDraggedItem,
+  canAddNew=false,
+  onAdd
 }) {
+  const [showAdd, setShowAdd] = useState(false); 
+
+  const handleAdd = () => {  
+    setShowAdd(true) 
+  };
+  const handleSubmit = (newCard)=>{
+    onAdd && onAdd(newCard)
+    setShowAdd(false)
+  }
   return (
     <section
       onDragStart={() => setIsDragSource(true)}
@@ -36,10 +49,18 @@ export default function KanBanColumn({
       } }
       css={KanBanColumnStyle(bgColor)}
     >
-      <h2>{title}</h2>
+      <h2>
+        {title}
+        {canAddNew && 
+        <button onClick={handleAdd} disabled={showAdd}>
+        ⊕ 添加新卡片
+        </button>
+      }
+      </h2>
       <ul>
         {children}
-        {cardList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props}  key={props.title}/>) }
+        {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
+        {cardList.map(props => <KanbanCard onDragStart={()=>setDraggedItem && setDraggedItem(props)} {...props}  key={props.title}/>) }
       </ul>
 
     </section>
