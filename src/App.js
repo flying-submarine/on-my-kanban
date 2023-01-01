@@ -5,7 +5,8 @@ import KanBanBoard,{
   COLUMN_KEY_ONGOING,
   COLUMN_KEY_DONE
 } from './KanBanBoard';
-import { useState,useEffect } from 'react';
+import React,{ useState,useEffect } from 'react';
+import AdminContext from './context/AdminContext'
 
 import './App.css';
 
@@ -20,7 +21,7 @@ export const UPDATE_INTERVAL = MINUTE;
 
 function App() {
   const [isLoading,setIsLoading] = useState(true)
-
+  const [isAdmin,setIsAdmin] = useState(false)
   const [todoList,setTodoList] = useState([
     { title: '开发任务-1', status: '2022-09-15 21:10' },
     { title: '开发任务-3', status: '2022-05-22 18:15' },
@@ -41,6 +42,9 @@ function App() {
     [COLUMN_KEY_ONGOING]:setOngoingList,
     [COLUMN_KEY_DONE]:setDoneList,
   }
+  const handleToggleAdmin = (evt) => { 
+    setIsAdmin(!isAdmin);
+  };
   useEffect(()=>{
     const data = window.localStorage.getItem(DATA_STORE_KEY);
     setTimeout(()=>{
@@ -65,27 +69,35 @@ function App() {
 
   const handleAdd = (cloumn,draggedItem)=>{
     updates[cloumn](pre=>([draggedItem,...pre]))
-
   }
   
-  const onRemove = (cloumn,draggedItem)=>{
-    updates[cloumn](pre=>pre.filter(v=>!Object.is(v,draggedItem)))
+  const onRemove = (cloumn,cardToRemove)=>{
+    updates[cloumn]((currentStat) => currentStat.filter((item) => item.title !== cardToRemove.title) );
   }
   
   return (
     <div className="App">
       <header className="App-header">
-        <h1>我的看板<button onClick={handleSaveAll}>保存所有卡片</button></h1>
+        <h1>我的看板
+          <button onClick={handleSaveAll}>保存所有卡片</button>
+          <label>
+            <input type='checkbox' value={isAdmin} onChange={handleToggleAdmin}/>
+            管理员模式
+          </label>
+        </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
-      <KanBanBoard
-        isLoading={isLoading}
-        todoList={todoList}
-        ongoingList={ongoingList}
-        doneList={doneList}
-        onAdd={handleAdd}
-        onRemove={onRemove}
-      />
+      <AdminContext.Provider value={isAdmin}>
+        <KanBanBoard
+          isLoading={isLoading}
+          todoList={todoList}
+          ongoingList={ongoingList}
+          doneList={doneList}
+          onAdd={handleAdd}
+          onRemove={onRemove}
+        />
+      </AdminContext.Provider>
+      
     </div>
   );
 }

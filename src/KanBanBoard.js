@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */ 
 import { css } from '@emotion/react';
-import { useState,useEffect } from 'react';
+import { useState } from 'react';
 import KanBanColumn from './KanBanColumn'
 const kanbanBoardStyles = css`
   flex: 10;
@@ -74,6 +74,7 @@ export default function KanBanBoard({
           handleDrop={handleDrop}
           cardList={doneList}
           setDraggedItem={setDraggedItem}
+          onRemove={onRemove.bind(null, COLUMN_KEY_DONE)}
         />
     </main>
   );

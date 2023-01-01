@@ -31,4 +31,12 @@
     font-size: calc(10px+2vmin);
     color: white;
 }
+.App-header > h1 > * {
+  margin-left: 1rem;
+}
+
+.App-header > h1 > label {
+  font-size: initial;
+  font-weight: initial;
+}
     

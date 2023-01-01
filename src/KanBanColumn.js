@@ -15,7 +15,8 @@ export default function KanBanColumn({
   cardList=[],
   setDraggedItem,
   canAddNew=false,
-  onAdd
+  onAdd,
+  onRemove
 }) {
   const [showAdd, setShowAdd] = useState(false); 
 
@@ -61,7 +62,11 @@ export default function KanBanColumn({
       <ul>
         {children}
         {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
-        {cardList.map(props => <KanbanCard onDragStart={()=>setDraggedItem && setDraggedItem(props)} {...props}  key={props.title}/>) }
+        {cardList.map(props => <KanbanCard 
+         onDragStart={()=>setDraggedItem && setDraggedItem(props)}
+        {...props}  
+        onRemove={onRemove}
+        key={props.title}/>) }
       </ul>
 
     </section>
