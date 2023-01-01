@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */ 
 import { css } from '@emotion/react';
+import KanbanCard from './KanbanCard';
 
 export default function KanBanColumn({
   children,
@@ -7,7 +8,9 @@ export default function KanBanColumn({
   title,
   setIsDragSource = () => { },
   setIsDragTarget = () => { },
-  handleDrop
+  handleDrop,
+  cardList=[],
+  setDraggedItem
 }) {
   return (
     <section
@@ -34,7 +37,11 @@ export default function KanBanColumn({
       css={KanBanColumnStyle(bgColor)}
     >
       <h2>{title}</h2>
-      <ul>{children}</ul>
+      <ul>
+        {children}
+        {cardList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props}  key={props.title}/>) }
+      </ul>
+
     </section>
   );
 }

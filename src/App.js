@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import { useState,useEffect } from 'react';
 import KanBanBoard from './KanBanBoard';
-import KanbanCard from './KanbanCard';
 import KanbanNewCard from './KanbanNewCard';
 import KanBanColumn from './KanBanColumn';
 
@@ -100,6 +99,7 @@ function App() {
       updateMethodObj[dragTarget](pre=>([draggedItem,...pre]))
     }
   }
+
   
   return (
     <div className="App">
@@ -120,12 +120,13 @@ function App() {
                   </button>
                 </>
               }
+              cardList={todoList}
               setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
               setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
               handleDrop={handleDrop}
+              setDraggedItem
             >
               {showAdd && <KanbanNewCard onSubmit={handleSubmit}/>}
-              {todoList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props}  key={props.title}/>) }
             </KanBanColumn>
         )}
         <KanBanColumn 
@@ -134,8 +135,10 @@ function App() {
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_ONGOING : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_ONGOING : null)}
           handleDrop={handleDrop}
+          cardList={ongoingList}
+          setDraggedItem
+
         >
-            { ongoingList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props} key={props.title}/>) }
         </KanBanColumn>
         <KanBanColumn  
           bgColor = {COLUMN_BG_COlORS["done"]} 
@@ -143,8 +146,9 @@ function App() {
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_DONE : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_DONE : null)}
           handleDrop={handleDrop}
+          cardList={doneList}
+          setDraggedItem
         >
-            { doneList.map(props => <KanbanCard onDragStart={()=>setDraggedItem(props)} {...props} key={props.title} />) }
         </KanBanColumn>
       </KanBanBoard>
     </div>
