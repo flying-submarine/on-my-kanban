@@ -5,7 +5,7 @@ import KanBanBoard,{
   COLUMN_KEY_ONGOING,
   COLUMN_KEY_DONE
 } from './KanBanBoard';
-import React,{ useState,useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import AdminContext from './context/AdminContext'
 
 import './App.css';
@@ -97,7 +97,6 @@ function App() {
           onRemove={onRemove}
         />
       </AdminContext.Provider>
-      
     </div>
   );
 }
