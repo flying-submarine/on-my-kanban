@@ -52,7 +52,7 @@ export default function KanBanBoard({
           setIsDragSource={(isSrc) => setDragSource(isSrc ? COLUMN_KEY_TODO : null)}
           setIsDragTarget={(isTgt) => setDragTarget(isTgt ? COLUMN_KEY_TODO : null)}
           handleDrop={handleDrop}
-          onAdd={onAdd.bind(null,'COLUMN_KEY_TODO')}
+          onAdd={onAdd.bind(null,COLUMN_KEY_TODO)}
           canAddNew={true}
           setDraggedItem={setDraggedItem}
         />
