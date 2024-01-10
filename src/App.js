@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */ 
-import logo from './logo.svg';
+import logo from './cat.jpeg';
 import KanBanBoard,{
   COLUMN_KEY_TODO,
   COLUMN_KEY_ONGOING,
