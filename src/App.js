@@ -78,16 +78,16 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>我的看板
+        {/* <h1>我的看板
           <button onClick={handleSaveAll}>保存所有卡片</button>
           <label>
             <input type='checkbox' value={isAdmin} onChange={handleToggleAdmin}/>
             管理员模式
           </label>
-        </h1>
+        </h1> */}
         <img src={logo} className="App-logo" alt="logo" />
       </header>
-      <AdminContext.Provider value={isAdmin}>
+      {/* <AdminContext.Provider value={isAdmin}>
         <KanBanBoard
           isLoading={isLoading}
           todoList={todoList}
@@ -96,7 +96,7 @@ function App() {
           onAdd={handleAdd}
           onRemove={onRemove}
         />
-      </AdminContext.Provider>
+      </AdminContext.Provider> */}
     </div>
   );
 }
