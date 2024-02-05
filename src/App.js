@@ -7,6 +7,7 @@ import KanBanBoard,{
 } from './KanBanBoard';
 import { useState,useEffect } from 'react';
 import AdminContext from './context/AdminContext'
+// import MahJong from './mahjong/index'
 
 import './App.css';
 
@@ -78,16 +79,16 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>我的看板
+        <h1>杨晓阳的个人博客
           <button onClick={handleSaveAll}>保存所有卡片</button>
           <label>
             <input type='checkbox' value={isAdmin} onChange={handleToggleAdmin}/>
             管理员模式
           </label>
         </h1>
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
+        <img src={logo} className="App-logo" alt="logo" />
       </header>
-      <AdminContext.Provider value={isAdmin}>
+      {/* <AdminContext.Provider value={isAdmin}>
         <KanBanBoard
           isLoading={isLoading}
           todoList={todoList}
@@ -97,6 +98,7 @@ function App() {
           onRemove={onRemove}
         />
       </AdminContext.Provider>
+      <MahJong/> */}
     </div>
   );
 }
